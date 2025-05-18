@@ -1,0 +1,25 @@
+global:
+  namespace: document-analyzer-fullstack-app
+
+postgres:
+  image: postgres:latest
+  port: 5432
+  dbname: document-analyzer-postgres-db
+  user: dbadmin
+  password: strongpassword123
+
+user-document-service:
+  image: 258173133840.dkr.ecr.us-east-1.amazonaws.com/user-document-service:latest
+  port: 8001
+
+rag-python-api:
+  image: 258173133840.dkr.ecr.us-east-1.amazonaws.com/rag-python-api:latest
+  port: 8000
+
+frontend:
+  image: 258173133840.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+  port: 80
+
+secrets:
+  jwtSecret: supersecret
+  openaiApiKey: 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

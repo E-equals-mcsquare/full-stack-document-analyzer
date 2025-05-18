@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-document-service
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-document-service
+  template:
+    metadata:
+      labels:
+        app: user-document-service
+    spec:
+      containers:
+        - name: user-document-service
+          image: {{ .Values.user-document-service.image }}
+          ports:
+            - containerPort: {{ .Values.user-document-service.port }}
+          env:
+            - name: DB_HOST
+              value: dbadmin
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_PASS
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_NAME
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: JWT_SECRET
+            - name: PYTHON_API_URL
+              value: http://rag-rag:{{ .Values.rag.port }}

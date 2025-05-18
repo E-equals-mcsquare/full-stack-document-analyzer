@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-document-service
+  namespace: {{ .Values.global.namespace }}
+spec:
+  selector:
+    app: user-document-service
+  ports:
+    - port: 80
+      targetPort: {{ .Values.user-document-service.port }}

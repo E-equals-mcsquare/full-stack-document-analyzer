@@ -1,0 +1,24 @@
+apiVersion: v2
+name: rag-app
+description: A Helm chart for deploying the full-stack RAG-based Document Q&A system on AWS EKS
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+keywords:
+  - rag
+  - qna
+  - fastapi
+  - nodejs
+  - nextjs
+  - helm
+  - eks
+
+maintainers:
+  - name: Souvik Majumder
+    email: your-email@example.com
+
+sources:
+  - https://github.com/your-org/rag-app
+
+home: https://your-rag-frontend-url.com

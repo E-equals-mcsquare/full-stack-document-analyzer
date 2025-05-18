@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dbadmin
+      POSTGRES_PASSWORD: strongpassword123
+      POSTGRES_DB: document-analyzer-postgres-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: rag-service/Dockerfile
+    container_name: rag-python-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://dbadmin:strongpassword123@db:5432/document-analyzer-postgres-db
+      S3_BUCKET_NAME: document-analyzer-document-bucket-97ea2ea6
+      OPENAI_API_KEY: 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
+    volumes:
+      - ~/.aws:/root/.aws:ro
+      - ./rag-service:/app
+    command: sh -c "python create_tables.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  backend:
+    build:
+      context: .
+      dockerfile: user-document-service/Dockerfile
+    container_name: user-document-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+      - api
+    environment:
+      PORT: 8001
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: dbadmin
+      DB_PASS: strongpassword123
+      DB_NAME: document-analyzer-postgres-db
+      JWT_SECRET: supersecret
+      PYTHON_API_URL: http://api:8000
+    volumes:
+      - ./user-document-service:/app
+    command: sh -c "npm run build && node dist/sync.js && node dist/index.js"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - api
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8001
+    volumes:
+      - ./frontend:/app
+
+volumes:
+  pgdata:

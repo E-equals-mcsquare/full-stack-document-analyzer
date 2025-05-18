@@ -1,0 +1,53 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+
+# Logs
+*.log
+
+# Unit test / coverage
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Docker artifacts
+Dockerfile.*
+docker-compose.yml
+
+# IDE configs
+.vscode/
+.idea/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Node (in case you later mix with JS code)
+node_modules/
+
+# Build artifacts
+dist/
+build/
+out/

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-python-api
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-python-api
+  template:
+    metadata:
+      labels:
+        app: rag-python-api
+    spec:
+      containers:
+        - name: rag-python-api
+          image: {{ .Values.rag-python-api.image }}
+          ports:
+            - containerPort: {{ .Values.rag-python-api.port }}
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: OPENAI_API_KEY
+            - name: DB_HOST
+              value: localhost
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_PASS
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: rag-app-secrets
+                  key: DB_NAME
