@@ -1,0 +1,42 @@
+name: RAG Python API CI/CD
+
+on:
+  push:
+    paths:
+      - "rag-service/**"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      ECR_REPO: rag-python-api
+      AWS_REGION: us-east-1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and Push Docker image
+        run: |
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO }}"
+          docker build -t $IMAGE_URI ./rag-python-api
+          docker push $IMAGE_URI
+
+      - name: Deploy via Helm
+        run: |
+          helm upgrade --install rag-app ./helm \
+            --namespace rag-app \
+            --create-namespace \
+            --set rag.image=$IMAGE_URI
